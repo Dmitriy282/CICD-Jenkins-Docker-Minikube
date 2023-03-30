@@ -2,12 +2,14 @@
 # Build stage 1.
 # This state builds our Script and produces an intermediate Docker image containing the compiled JavaScript code.
 #
-FROM node:10 as builder
+FROM node:16.14.0 as builder
 WORKDIR /usr/src/app
-COPY ./package*.json ./
-RUN npm install --verbose
+# COPY ./package*.json ./
+
 COPY . .
-RUN npm run build
+RUN rm -rf node_modules && ls -li && npm install --verbose
+#--only=production
+RUN npm  run build && ls -li
 
 #
 # Build stage 2.
@@ -15,7 +17,7 @@ RUN npm run build
 # This stage builds the final Docker image that we'll use in production.
 #
 
-FROM node:10
+FROM node:16.14.0
 WORKDIR /usr/src/app
 COPY ./server/package*.json ./
 RUN npm install --only=production
